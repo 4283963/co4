@@ -83,6 +83,10 @@ exports.emptyBin = async (req, res) => {
     if (!bin) {
       return res.status(404).json({ error: '垃圾桶不存在' });
     }
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('bins-updated', [bin]);
+    }
     res.json(bin);
   } catch (error) {
     res.status(500).json({ error: error.message });

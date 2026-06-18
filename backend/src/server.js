@@ -21,6 +21,8 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+app.set('io', io);
+
 app.use('/api/bins', trashBinRoutes);
 
 app.get('/api/health', (req, res) => {

@@ -51,6 +51,7 @@
           v-for="bin in filteredBins"
           :key="bin._id"
           :bin="bin"
+          @empty="handleEmpty"
         />
       </div>
 
@@ -63,6 +64,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import TrashBin from './components/TrashBin.vue';
 
 const bins = ref([]);
@@ -116,6 +118,25 @@ async function fetchBins() {
   }
 }
 
+async function handleEmpty(binId) {
+  try {
+    await axios.put(`/api/bins/${binId}/empty`);
+    ElMessage.success('垃圾桶已清理');
+  } catch (error) {
+    console.error('清理垃圾桶失败:', error);
+    ElMessage.error('清理失败，请重试');
+  }
+}
+
+function applyBinUpdates(updatedBins) {
+  updatedBins.forEach(updatedBin => {
+    const index = bins.value.findIndex(b => b._id === updatedBin._id);
+    if (index !== -1) {
+      bins.value.splice(index, 1, updatedBin);
+    }
+  });
+}
+
 function initSocket() {
   socket = io('http://localhost:3000', {
     transports: ['websocket', 'polling'],
@@ -132,12 +153,7 @@ function initSocket() {
   });
 
   socket.on('bins-updated', (updatedBins) => {
-    updatedBins.forEach(updatedBin => {
-      const index = bins.value.findIndex(b => b._id === updatedBin._id);
-      if (index !== -1) {
-        bins.value[index] = updatedBin;
-      }
-    });
+    applyBinUpdates(updatedBins);
   });
 }
 

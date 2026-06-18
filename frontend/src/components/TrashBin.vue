@@ -59,12 +59,22 @@
       <div class="fill-text">
         满载率: <strong :class="{ 'full-text': bin.isFull }">{{ bin.fillLevel }}%</strong>
       </div>
+      <el-button
+        class="empty-btn"
+        type="success"
+        size="small"
+        :icon="CircleCheck"
+        @click="$emit('empty', bin._id)"
+      >
+        已清理
+      </el-button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { CircleCheck } from '@element-plus/icons-vue';
 
 const props = defineProps({
   bin: {
@@ -72,6 +82,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+defineEmits(['empty']);
 
 const typeMap = {
   kitchen: { name: '厨余垃圾', color: '#67c23a' },
@@ -197,5 +209,10 @@ const fillPath = computed(() => {
 
 .fill-text .full-text {
   color: #f56c6c;
+}
+
+.empty-btn {
+  margin-top: 12px;
+  width: 100%;
 }
 </style>
