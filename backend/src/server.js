@@ -6,6 +6,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 const trashBinRoutes = require('./routes/trashBinRoutes');
+const workOrderRoutes = require('./routes/workOrderRoutes');
 const { startFillLevelScheduler } = require('./middleware/scheduler');
 const { initializeBins } = require('./controllers/trashBinController');
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.set('io', io);
 
 app.use('/api/bins', trashBinRoutes);
+app.use('/api/work-orders', workOrderRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: '智能垃圾桶管理系统运行正常' });

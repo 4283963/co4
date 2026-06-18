@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard">
+    <AlertBubble ref="alertBubbleRef" />
     <el-header class="header">
       <div class="header-content">
         <div class="logo-section">
@@ -66,6 +67,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import TrashBin from './components/TrashBin.vue';
+import AlertBubble from './components/AlertBubble.vue';
 
 const bins = ref([]);
 const loading = ref(true);
@@ -73,6 +75,7 @@ const connectionStatus = ref(false);
 const selectedType = ref('');
 const selectedLocation = ref('');
 const showFullOnly = ref(false);
+const alertBubbleRef = ref(null);
 
 let socket = null;
 
@@ -154,6 +157,12 @@ function initSocket() {
 
   socket.on('bins-updated', (updatedBins) => {
     applyBinUpdates(updatedBins);
+  });
+
+  socket.on('new-work-order', (order) => {
+    if (alertBubbleRef.value) {
+      alertBubbleRef.value.addAlert(order);
+    }
   });
 }
 
